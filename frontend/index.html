@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Chẩn Đoán Sâu Răng - AI Dental</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-tooth"></i>
+                <span>AI Dental</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link active">Trang Chủ</a>
+                <a href="#analysis" class="nav-link">Phân Tích</a>
+                <a href="#about" class="nav-link">Về Chúng Tôi</a>
+                <a href="#contact" class="nav-link">Liên Hệ</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">Chẩn Đoán Sâu Răng Tự Động</h1>
+            <p class="hero-subtitle">Sử dụng Trí Tuệ Nhân Tạo và Công Nghệ Machine Learning</p>
+            <button class="btn btn-primary btn-lg" onclick="scrollToAnalysis()">
+                <i class="fas fa-play-circle"></i> Bắt Đầu Phân Tích
+            </button>
+        </div>
+        <div class="hero-decoration">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </section>
+
+    <!-- Analysis Section -->
+    <section class="analysis-section" id="analysis">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-microscope"></i> Phân Tích Ảnh Răng
+            </h2>
+            
+            <div class="analysis-container">
+                <!-- Patient Info Card -->
+                <div class="patient-info-card">
+                    <h3>Thông Tin Bệnh Nhân</h3>
+                    <div class="patient-form-grid">
+                        <div class="form-row">
+                            <label for="patientName">Họ và Tên</label>
+                            <input id="patientName" type="text" placeholder="Nguyễn Văn A">
+                        </div>
+                        <div class="form-row">
+                            <label for="patientDob">Ngày Sinh</label>
+                            <input id="patientDob" type="date">
+                        </div>
+                        <div class="form-row">
+                            <label for="patientGender">Giới Tính</label>
+                            <select id="patientGender">
+                                <option value="">Chọn</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="patientAddress">Địa Chỉ</label>
+                            <input id="patientAddress" type="text" placeholder="Quận, Thành phố">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload and Preview Row -->
+                <div class="upload-preview-row">
+                    <!-- Upload Area -->
+                    <div class="upload-card">
+                        <div class="upload-container">
+                            <div class="upload-zone" id="uploadZone">
+                                <i class="fas fa-image"></i>
+                                <h3>Tải Ảnh Lên</h3>
+                                <p>Kéo thả ảnh hoặc click để chọn</p>
+                                <p class="upload-formats">PNG, JPG, JPEG, GIF (Tối đa 16MB)</p>
+                                <input type="file" id="imageInput" class="file-input" accept="image/*">
+                            </div>
+                            <div class="uploading hidden" id="uploading">
+                                <div class="spinner"></div>
+                                <p>Đang xử lý ảnh...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Image -->
+                    <div class="preview-card">
+                        <h4>Ảnh đã upload</h4>
+                        <img id="uploadedPreview" src="" alt="Ảnh đã tải lên" class="preview-image hidden">
+                        <p class="preview-hint">Chọn ảnh sẽ hiển thị ở đây.</p>
+                    </div>
+                </div>
+
+                <!-- Results Area -->
+                <div class="results-card hidden" id="resultsCard">
+                    <div class="results-container">
+                        <h3>Kết Quả Phân Tích</h3>
+                        <div class="report-meta" id="reportMeta"></div>
+
+                        <!-- Result Images -->
+                        <div class="result-image-grid">
+                            <div class="result-image-box">
+                                <h4>Ảnh gốc</h4>
+                                <img id="originalImage" src="" alt="Ảnh gốc" class="result-image">
+                                <div class="image-caption" id="originalImageCaption"></div>
+                            </div>
+                            <div class="result-image-box">
+                                <h4>Ảnh phân tích</h4>
+                                <img id="resultImage" src="" alt="Kết quả phân tích" class="result-image">
+                            </div>
+                        </div>
+
+                        <!-- Health Score -->
+                        <div class="health-score-box" style="display: none;">
+                            <div class="score-meter">
+                                <div class="score-percentage" id="scorePercentage">0%</div>
+                                <canvas id="scoreCanvas" class="score-canvas"></canvas>
+                            </div>
+                            <div class="score-info">
+                                <p>Chỉ Số Sức Khỏe Răng</p>
+                                <p class="score-status" id="scoreStatus">Đang phân tích...</p>
+                            </div>
+                        </div>
+
+                        <!-- Statistics -->
+                        <div class="statistics" style="display: none;">
+                            <div class="stat-item decay">
+                                <div class="stat-icon">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="stat-data">
+                                    <span class="stat-number" id="statDecay">0</span>
+                                    <span class="stat-label">Tỷ Lệ Răng Sâu</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detection Details -->
+                        <div class="detection-details" id="detectionDetails"></div>
+
+                        <!-- Recommendations -->
+                        <div class="recommendations-box">
+                            <h4>
+                                <i class="fas fa-lightbulb"></i> Khuyến Cáo
+                            </h4>
+                            <div class="recommendations" id="recommendations"></div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" onclick="downloadPdf()">
+                                <i class="fas fa-file-pdf"></i> Tải PDF
+                            </button>
+                            <button class="btn btn-primary" onclick="clearResults()">
+                                <i class="fas fa-redo"></i> Phân Tích Lại
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End analysis-container -->
+
+            <!-- Error Message -->
+            <div class="error-message hidden" id="errorMessage"></div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <h2 class="section-title">Tính Năng Chính</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI Tiên Tiến</h3>
+                    <p>Sử dụng CNN + YOLO để phát hiện và phân loại sâu răng với độ chính xác cao</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Xử Lý Nhanh</h3>
+                    <p>Phân tích kết quả trong vài giây, hỗ trợ real-time analysis</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Thống Kê Chi Tiết</h3>
+                    <p>Báo cáo chi tiết về tình trạng từng chiếc răng và chỉ số sức khỏe tổng quát</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Bảo Mật Dữ Liệu</h3>
+                    <p>Ảnh được xử lý trên máy chủ, không lưu lại dữ liệu nhạy cảm</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Responsive Design</h3>
+                    <p>Hoạt động trên máy tính, tablet, và điện thoại di động</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3>Xuất Báo Cáo</h3>
+                    <p>Tải xuống kết quả phân tích dưới dạng ảnh hoặc PDF để lưu trữ</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <h2 class="section-title">Về Chúng Tôi</h2>
+            <div class="about-content">
+                <div class="about-card">
+                    <h3>Công Nghệ Sử Dụng</h3>
+                    <ul class="tech-list">
+                        <li><strong>Frontend:</strong> HTML5, CSS3, JavaScript</li>
+                        <li><strong>Backend:</strong> Python Flask</li>
+                        <li><strong>Deep Learning:</strong> TensorFlow (CNN) + YOLOv8</li>
+                        <li><strong>Image Processing:</strong> OpenCV, Pillow</li>
+                    </ul>
+                </div>
+                <div class="about-card">
+                    <h3>Cách Hoạt Động</h3>
+                    <ul class="process-list">
+                        <li><strong>Upload Ảnh:</strong> Người dùng tải lên ảnh răng</li>
+                        <li><strong>Phát Hiện:</strong> YOLO phát hiện vị trí răng trong ảnh</li>
+                        <li><strong>Phân Loại:</strong> CNN phân loại mức độ sâu răng</li>
+                        <li><strong>Xuất Kết Quả:</strong> Hệ thống tạo báo cáo phân tích</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <h2 class="section-title">Liên Hệ & Hỗ Trợ</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>kienthanhlong131@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Điện Thoại</h4>
+                            <p>0366021139</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Địa Chỉ</h4>
+                            <p>Đại học Nam Cần Thơ, Cần Thơ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Hệ Thống Chẩn Đoán Sâu Răng AI. Luận Văn Tốt Nghiệp.</p>
+            <p>Phát triển bởi: [Tên Sinh Viên] | Hướng dẫn: [Tên Thầy Cô]</p>
+        </div>
+    </footer>
+
+    <!-- Modal for Detailed Detection -->
+    <div class="modal hidden" id="detailModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeDetailModal()">&times;</span>
+            <h3>Chi Tiết Phát Hiện</h3>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <!-- PDF export library (pdfmake supports Vietnamese Unicode) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <script src="js/main.js?v=20260317"></script>
+</body>
+</html>
