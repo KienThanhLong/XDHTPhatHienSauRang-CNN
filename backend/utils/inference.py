@@ -80,7 +80,8 @@ class ToothAnalyzer:
             if pred.ndim == 0 or pred.shape[0] == 1:
                 # binary output (e.g. sigmoid) -> probability of positive class
                 prob = float(pred.squeeze())
-                threshold = 0.5
+                threshold = 0.3  # Lowered from 0.5 to be more sensitive to decay
+                print(f"[debug] Binary classification: prob={prob:.4f}, threshold={threshold}")
                 if prob >= threshold:
                     class_idx = 1
                     class_name = TOOTH_CLASSES.get(class_idx, "Sâu nhẹ")
@@ -90,12 +91,14 @@ class ToothAnalyzer:
                     class_name = TOOTH_CLASSES.get(class_idx, "Khỏe mạnh")
                     confidence = 1 - prob
                 probabilities = [1 - prob, prob]
+                print(f"[debug] Result: class_idx={class_idx}, class_name={class_name}, confidence={confidence:.4f}")
             else:
                 # multi‑class softmax
                 class_idx = int(np.argmax(pred))
                 confidence = float(pred[class_idx])
                 class_name = TOOTH_CLASSES.get(class_idx, f"Class {class_idx}")
                 probabilities = pred.tolist()
+                print(f"[debug] Multi-class: class_idx={class_idx}, class_name={class_name}, confidence={confidence:.4f}, probs={probabilities}")
 
             # Ensure class_name is clear
             if class_idx == 0:
