@@ -70,6 +70,7 @@ def analyze_image():
         # Phân tích
         try:
             results = analyzer.analyze_image(image)
+            print(f"Analysis results: {results}")  # Log để debug
         except Exception as e:
             print(f"Analysis failed, using mock data: {e}")
             # Mock data để đảm bảo giao diện hoạt động như localhost
