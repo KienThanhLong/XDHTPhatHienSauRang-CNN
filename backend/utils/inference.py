@@ -80,18 +80,19 @@ class ToothAnalyzer:
             if pred.ndim == 0 or pred.shape[0] == 1:
                 # binary output (e.g. sigmoid) -> probability of positive class
                 prob = float(pred.squeeze())
-                # TEMP: lower threshold to 0.3 to test if model can detect decay
-                threshold = 0.3  # adjust this value as needed
+                # Threshold 0.5 typically. This emulates original model binary logic.
+                threshold = 0.5
                 if prob >= threshold:
                     # positive/decay
-                    class_name = "Có sâu răng"
-                    class_idx = 1
+                    class_index = 1
+                    class_name = TOOTH_CLASSES.get(class_index, "Có sâu răng")
                     confidence = prob
                 else:
-                    class_name = "Không có sâu răng"
-                    class_idx = 0
+                    class_index = 0
+                    class_name = TOOTH_CLASSES.get(class_index, "Không có sâu răng")
                     confidence = 1 - prob
                 probabilities = [1 - prob, prob]  # [healthy, decay]
+                class_idx = class_index
             else:
                 # multi‑class softmax
                 class_idx = int(np.argmax(pred))
@@ -151,9 +152,9 @@ class ToothAnalyzer:
                     results['summary']['total_teeth'] += 1
                     class_name = classification['class_name']
                     
-                    if class_name == "Không có sâu răng":
+                    if class_name.lower().find('khỏe') != -1 or class_name.lower().find('khong') != -1:
                         results['summary']['healthy'] += 1
-                    elif class_name == "Có sâu răng":
+                    elif class_name.lower().find('sâu') != -1:
                         results['summary']['light_decay'] += 1  # using light_decay for decay count
             print(f"[debug] classified {classified_count} teeth, total_teeth now {results['summary']['total_teeth']}")
 

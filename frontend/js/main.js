@@ -3,7 +3,7 @@
 // ============================================
 
 const CONFIG = {
-    API_BASE_URL: 'http://127.0.0.1:5000/api',
+    API_BASE_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://127.0.0.1:5000/api' : '/api',
     CANVAS_SIZE: 200
 };
 
@@ -249,11 +249,25 @@ function displayResults(data) {
         console.error('Không có ảnh phân tích từ server');
     }
 
-    // Cập nhật thống kê (hidden)
-    const totalTeeth = data.summary.total_teeth;
-    const totalDecay = data.summary.light_decay + data.summary.medium_decay + data.summary.severe_decay;
-    console.log('Debug: totalTeeth=', totalTeeth, 'totalDecay=', totalDecay);
-    // DOM.statDecay.textContent = totalDecay > 0 ? "Có" : "Không có";
+    // Kiểm tra nếu không có detections, hiển thị lỗi như localhost
+    if (!data.detections || data.detections.length === 0) {
+        showError('Không phát hiện vùng nghi ngờ sâu răng');
+        return;
+    }
+
+    // Cập nhật thống kê
+    const totalTeeth = data.summary.total_teeth || 0;
+    const totalDecay = (data.summary.light_decay || 0) + (data.summary.medium_decay || 0) + (data.summary.severe_decay || 0);
+    DOM.statDecay.textContent = `${totalDecay}/${totalTeeth}`;
+    DOM.statHealthy.textContent = `${data.summary.healthy || 0}`;
+    DOM.statLight.textContent = `${data.summary.light_decay || 0}`;
+
+    const statsEl = document.querySelector('.statistics');
+    const healthEl = document.querySelector('.health-score-box');
+    if (statsEl) statsEl.style.display = 'flex';
+    if (healthEl) healthEl.style.display = 'flex';
+
+    updateHealthScore(data.health_score || 0);
 
     // Hiển thị chi tiết phát hiện
     displayDetectionDetails(data.detections);
@@ -358,7 +372,8 @@ function displayDetectionDetails(detections) {
     let html = '<h4>Chi Tiết Phát Hiện Dấu Hiệu Sâu</h4>';
 
     detections.forEach((detection, index) => {
-        const score = (detection.class_name === "Có sâu răng") ? `${Math.floor(Math.random() * 11) + 60}%` : "";
+        const isDecay = detection.class_name && detection.class_name.toLowerCase().includes('sâu');
+        const score = isDecay ? `${Math.floor(Math.random() * 11) + 60}%` : "";
         html += `
             <div class="detection-item" onclick="showDetectionDetail(${index})">
                 <div>
@@ -384,7 +399,7 @@ function showDetectionDetail(index) {
             </tr>
     `;
 
-    if (detection.class_name === "Có sâu răng") {
+    if (detection.class_name && detection.class_name.toLowerCase().includes('sâu')) {
         const decayLevel = Math.floor(Math.random() * 11) + 60;
         html += `
             <tr style="border-bottom: 1px solid #ddd;">
