@@ -68,17 +68,7 @@ def analyze_image():
         image = read_image(image_data)
         
         # Phân tích
-        try:
-            results = analyzer.analyze_image(image)
-            print(f"Analysis results: {results}")  # Log để debug
-        except Exception as e:
-            print(f"Analysis failed, using mock data: {e}")
-            results = get_demo_analysis(image)
-
-        # Nếu không có detections thì trả về fallback demo (tránh giao diện HF trống)
-        if not results.get('detections'):
-            print("No detections found; fallback to demo results")
-            results = get_demo_analysis(image)
+        results = analyzer.analyze_image(image)
 
         # make sure all returned values are JSON-friendly (no numpy objects)
         # bbox arrays already converted in inference, but be safe in case other numpy types slip through
@@ -140,33 +130,6 @@ def health_check():
         'status': 'ok',
         'timestamp': datetime.now().isoformat()
     }), 200
-
-# ==================== Fallback / Demo Helpers ====================
-
-def get_demo_analysis(image):
-    # trả về demo kết quả giống localhost để đảm bảo UX khi mô hình chưa load hoặc không phát hiện
-    detections = [
-        {'bbox': [50, 120, 180, 260], 'confidence': 0.92, 'class_id': 1, 'class_name': 'Sâu nhẹ', 'classification_confidence': 0.87, 'probabilities': [0.12, 0.88]},
-        {'bbox': [320, 140, 460, 280], 'confidence': 0.88, 'class_id': 1, 'class_name': 'Sâu nhẹ', 'classification_confidence': 0.84, 'probabilities': [0.16, 0.84]},
-        {'bbox': [580, 130, 710, 270], 'confidence': 0.91, 'class_id': 3, 'class_name': 'Sâu nặng', 'classification_confidence': 0.90, 'probabilities': [0.10, 0.90]}
-    ]
-    summary = {
-        'total_teeth': 3,
-        'healthy': 0,
-        'light_decay': 2,
-        'medium_decay': 0,
-        'severe_decay': 1
-    }
-    return {
-        'detections': detections,
-        'summary': summary,
-        'health_score': round((summary['healthy'] / summary['total_teeth'] * 100) if summary['total_teeth'] > 0 else 0, 2),
-        'recommendations': [
-            '⚠️ Phát hiện sâu răng: cần thăm khám sớm',
-            '💡 Bảo trì khoang miệng, vệ sinh kỹ',
-            '📌 Tình trạng: 3 răng, 3 răng sâu'
-        ]
-    }
 
 # ==================== Helper Functions ====================
 
