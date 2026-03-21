@@ -258,11 +258,12 @@ function displayResults(data) {
     // Cập nhật thống kê
     const totalTeeth = data.summary.total_teeth || 0;
     const totalDecay = (data.summary.light_decay || 0) + (data.summary.medium_decay || 0) + (data.summary.severe_decay || 0);
-    DOM.statDecay.textContent = `${totalDecay}/${totalTeeth}`;
-    DOM.statHealthy.textContent = `${data.summary.healthy || 0}`;
-    DOM.statLight.textContent = `${data.summary.light_decay || 0}`;
-    DOM.statMedium.textContent = `${data.summary.medium_decay || 0}`;
-    DOM.statSevere.textContent = `${data.summary.severe_decay || 0}`;
+    
+    if (DOM.statDecay) DOM.statDecay.textContent = `${totalDecay}/${totalTeeth}`;
+    if (DOM.statHealthy) DOM.statHealthy.textContent = `${data.summary.healthy || 0}`;
+    if (DOM.statLight) DOM.statLight.textContent = `${data.summary.light_decay || 0}`;
+    if (DOM.statMedium) DOM.statMedium.textContent = `${data.summary.medium_decay || 0}`;
+    if (DOM.statSevere) DOM.statSevere.textContent = `${data.summary.severe_decay || 0}`;
 
     const statsEl = document.querySelector('.statistics');
     const healthEl = document.querySelector('.health-score-box');
