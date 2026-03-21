@@ -192,10 +192,14 @@ def internal_error(error):
 # ==================== Main ====================
 
 if __name__ == '__main__':
+    host = os.getenv('APP_HOST', '127.0.0.1')
+    port = int(os.getenv('APP_PORT', '5000'))
+    debug = os.getenv('FLASK_DEBUG', 'true').lower() == 'true'
+
     print("""
     ╔════════════════════════════════════════════════════════╗
     ║   HỆtoast CHẨN ĐOÁN SÂU RĂNG BẰNG CNN + YOLO          ║
     ║   Khởi chạy máy chủ...                                 ║
     ╚════════════════════════════════════════════════════════╝
     """)
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run(debug=debug, host=host, port=port)
