@@ -80,25 +80,34 @@ class ToothAnalyzer:
             if pred.ndim == 0 or pred.shape[0] == 1:
                 # binary output (e.g. sigmoid) -> probability of positive class
                 prob = float(pred.squeeze())
-                # Threshold 0.5 typically. This emulates original model binary logic.
                 threshold = 0.5
                 if prob >= threshold:
-                    # positive/decay
-                    class_index = 1
-                    class_name = TOOTH_CLASSES.get(class_index, "Có sâu răng")
+                    class_idx = 1
+                    class_name = TOOTH_CLASSES.get(class_idx, "Sâu nhẹ")
                     confidence = prob
                 else:
-                    class_index = 0
-                    class_name = TOOTH_CLASSES.get(class_index, "Không có sâu răng")
+                    class_idx = 0
+                    class_name = TOOTH_CLASSES.get(class_idx, "Khỏe mạnh")
                     confidence = 1 - prob
-                probabilities = [1 - prob, prob]  # [healthy, decay]
-                class_idx = class_index
+                probabilities = [1 - prob, prob]
             else:
                 # multi‑class softmax
                 class_idx = int(np.argmax(pred))
                 confidence = float(pred[class_idx])
                 class_name = TOOTH_CLASSES.get(class_idx, f"Class {class_idx}")
                 probabilities = pred.tolist()
+
+            # Ensure class_name is clear
+            if class_idx == 0:
+                class_name = TOOTH_CLASSES.get(0, "Khỏe mạnh")
+            elif class_idx == 1:
+                class_name = TOOTH_CLASSES.get(1, "Sâu nhẹ")
+            elif class_idx == 2:
+                class_name = TOOTH_CLASSES.get(2, "Sâu vừa")
+            elif class_idx == 3:
+                class_name = TOOTH_CLASSES.get(3, "Sâu nặng")
+            else:
+                class_name = TOOTH_CLASSES.get(class_idx, class_name)
 
             return {
                 'class_id': class_idx,
@@ -151,11 +160,17 @@ class ToothAnalyzer:
                     # Cập nhật thống kê
                     results['summary']['total_teeth'] += 1
                     class_name = classification['class_name']
-                    
-                    if class_name.lower().find('khỏe') != -1 or class_name.lower().find('khong') != -1:
+
+                    if 'khỏe' in class_name.lower() or 'khong' in class_name.lower():
                         results['summary']['healthy'] += 1
-                    elif class_name.lower().find('sâu') != -1:
-                        results['summary']['light_decay'] += 1  # using light_decay for decay count
+                    elif 'sâu nhẹ' in class_name.lower():
+                        results['summary']['light_decay'] += 1
+                    elif 'sâu vừa' in class_name.lower():
+                        results['summary']['medium_decay'] += 1
+                    elif 'sâu nặng' in class_name.lower() or 'nặng' in class_name.lower():
+                        results['summary']['severe_decay'] += 1
+                    elif 'sâu' in class_name.lower():
+                        results['summary']['medium_decay'] += 1
             print(f"[debug] classified {classified_count} teeth, total_teeth now {results['summary']['total_teeth']}")
 
             

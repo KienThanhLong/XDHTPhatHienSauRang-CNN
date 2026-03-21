@@ -261,6 +261,8 @@ function displayResults(data) {
     DOM.statDecay.textContent = `${totalDecay}/${totalTeeth}`;
     DOM.statHealthy.textContent = `${data.summary.healthy || 0}`;
     DOM.statLight.textContent = `${data.summary.light_decay || 0}`;
+    DOM.statMedium.textContent = `${data.summary.medium_decay || 0}`;
+    DOM.statSevere.textContent = `${data.summary.severe_decay || 0}`;
 
     const statsEl = document.querySelector('.statistics');
     const healthEl = document.querySelector('.health-score-box');

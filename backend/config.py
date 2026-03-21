@@ -26,8 +26,10 @@ IMAGE_SIZE = (224, 224)
 CONFIDENCE_THRESHOLD = 0.5
 IOU_THRESHOLD = 0.45
 
-# Tooth classes (binary: healthy vs decay)
+# Tooth classes (mở rộng để khớp nhiều mức độ)
 TOOTH_CLASSES = {
     0: "Khỏe mạnh",
-    1: "Sâu nhẹ"
+    1: "Sâu nhẹ",
+    2: "Sâu vừa",
+    3: "Sâu nặng"
 }
