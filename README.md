@@ -2,6 +2,8 @@
 
 Đây là dự án luận văn xây dựng hệ thống phân tích sâu răng tự động bằng **Deep Learning** kết hợp **YOLOv8** (phát hiện vị trí) và **CNN** (phân loại mức độ sâu).
 
+https://huggingface.co/spaces/kienthanhlong/dental-caries-app
+
 > 🚀 Mục tiêu: Nhận đầu vào là ảnh X-quang răng, trả về vị trí răng bị sâu và thống kê tổng quan.
 
 ---
