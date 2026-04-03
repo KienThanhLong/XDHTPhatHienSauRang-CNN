@@ -10,6 +10,8 @@ from datetime import datetime
 import json
 import base64
 from pathlib import Path
+from PIL import Image, ImageDraw, ImageFont
+import numpy as np
 
 # Khởi tạo Flask app
 app = Flask(__name__,
@@ -71,10 +73,54 @@ def analyze_image():
             # Draw demo bounding boxes
             detections = []
             
+            def _load_vietnamese_font(size=16):
+                fonts = [
+                    "DejaVuSans-Bold.ttf",
+                    "DejaVuSans.ttf",
+                    "Arial.ttf",
+                    "arial.ttf",
+                    "arialuni.ttf",
+                    "NotoSans-Regular.ttf",
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                    "C:/Windows/Fonts/arial.ttf",
+                    "C:/Windows/Fonts/Arial.ttf",
+                    "C:/Windows/Fonts/arialuni.ttf",
+                    "C:/Windows/Fonts/NotoSans-Regular.ttf",
+                ]
+                for font_path in fonts:
+                    try:
+                        return ImageFont.truetype(font_path, size)
+                    except Exception:
+                        continue
+                return ImageFont.load_default()
+
+            def draw_label(img, text, x, y, box_color=(0, 0, 0), text_color=(255, 255, 255)):
+                pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+                draw = ImageDraw.Draw(pil_img)
+                font = _load_vietnamese_font(16)
+
+                raw_text = text
+                text = raw_text if raw_text.isascii() else ''.join(
+                    c for c in unicodedata.normalize('NFKD', raw_text) if unicodedata.category(c) != 'Mn'
+                )
+
+                # Bỏ hiển thị text, chỉ vẽ bounding box
+                #if hasattr(draw, 'textbbox'):
+                #    bbox = draw.textbbox((0, 0), text, font=font)
+                #    text_w = bbox[2] - bbox[0]
+                #    text_h = bbox[3] - bbox[1]
+                #else:
+                #    text_w, text_h = draw.textsize(text, font=font)
+
+                #draw.rectangle([x-2, y-2, x+text_w+2, y+text_h+2], fill=box_color)
+                #draw.text((x, y), text, font=font, fill=text_color)
+                return cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+
             # Demo detection 1
             x1, y1, x2, y2 = int(w*0.1), int(h*0.1), int(w*0.35), int(h*0.4)
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(img, "Khoe manh: 0.95", (x1, y1-5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+            img = draw_label(img, "Khỏe mạnh: 0.95", x1, y1-22, box_color=(0, 255, 0), text_color=(0, 0, 0))
             detections.append({
                 'bbox': [float(x1), float(y1), float(x2), float(y2)],
                 'confidence': 0.95,
@@ -86,7 +132,7 @@ def analyze_image():
             # Demo detection 2
             x1, y1, x2, y2 = int(w*0.4), int(h*0.15), int(w*0.65), int(h*0.5)
             cv2.rectangle(img, (x1, y1), (x2, y2), (255, 165, 0), 2)
-            cv2.putText(img, "Sau nhе: 0.88", (x1, y1-5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 165, 255), 2)
+            img = draw_label(img, "Sâu nhẹ: 0.88", x1, y1-22, box_color=(0, 165, 255), text_color=(0, 0, 0))
             detections.append({
                 'bbox': [float(x1), float(y1), float(x2), float(y2)],
                 'confidence': 0.88,
@@ -98,7 +144,7 @@ def analyze_image():
             # Demo detection 3
             x1, y1, x2, y2 = int(w*0.65), int(h*0.2), int(w*0.9), int(h*0.55)
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
-            cv2.putText(img, "Sau nang: 0.91", (x1, y1-5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+            img = draw_label(img, "Sâu nặng: 0.91", x1, y1-22, box_color=(0, 0, 255), text_color=(255, 255, 255))
             detections.append({
                 'bbox': [float(x1), float(y1), float(x2), float(y2)],
                 'confidence': 0.91,

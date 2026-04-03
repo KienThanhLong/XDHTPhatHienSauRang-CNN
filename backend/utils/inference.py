@@ -3,9 +3,16 @@ import numpy as np
 import tensorflow as tf
 from ultralytics import YOLO
 import os
+import unicodedata
 from config import (CNN_MODEL_PATH, YOLO_MODEL_PATH, CONFIDENCE_THRESHOLD,
                     IOU_THRESHOLD, TOOTH_CLASSES)
 from utils.image_processing import preprocess_cnn, preprocess_yolo
+
+def _normalize_to_ascii(text):
+    if not isinstance(text, str):
+        return text
+    normalized = unicodedata.normalize('NFKD', text)
+    return normalized.encode('ascii', 'ignore').decode('ascii')
 
 class ToothAnalyzer:
     """Lớp xử lý phân tích răng bằng CNN + YOLO"""
@@ -112,9 +119,12 @@ class ToothAnalyzer:
             else:
                 class_name = TOOTH_CLASSES.get(class_idx, class_name)
 
+            # Chuyển sang không dấu nếu font không hỗ trợ
+            class_name_ascii = class_name if class_name.isascii() else _normalize_to_ascii(class_name)
+
             return {
                 'class_id': class_idx,
-                'class_name': class_name,
+                'class_name': class_name_ascii,
                 'confidence': confidence,
                 'probabilities': probabilities
             }
